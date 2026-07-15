@@ -4,7 +4,10 @@ import { validationTier, isOrganizationValidated } from './validation-tier.js'
 import type { TlsClassification } from './types.js'
 
 export async function sha256Hex(der: Uint8Array): Promise<string> {
-  const buf = await crypto.subtle.digest('SHA-256', der)
+  // Copy into a plain ArrayBuffer so the WebCrypto types accept it regardless
+  // of the source view's backing buffer (handles byteOffset views correctly).
+  const ab = der.buffer.slice(der.byteOffset, der.byteOffset + der.byteLength) as ArrayBuffer
+  const buf = await crypto.subtle.digest('SHA-256', ab)
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 
