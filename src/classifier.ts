@@ -4,7 +4,7 @@ import { validationTier, isOrganizationValidated } from './validation-tier.js'
 import type { TlsClassification } from './types.js'
 
 export async function sha256Hex(der: Uint8Array): Promise<string> {
-  const buf = await crypto.subtle.digest('SHA-256', der as unknown as BufferSource)
+  const buf = await crypto.subtle.digest('SHA-256', der)
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 
