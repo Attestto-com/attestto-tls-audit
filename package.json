@@ -8,10 +8,20 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
-    "./node": { "import": "./dist/node.js", "types": "./dist/node.d.ts" }
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./node": {
+      "import": "./dist/node.js",
+      "types": "./dist/node.d.ts"
+    }
   },
-  "files": ["dist", "LICENSE", "README.md"],
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint src",
@@ -19,9 +29,19 @@
     "format:check": "prettier --check 'src/**/*.ts'",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run lint && npm test && npm run build"
+    "prepublishOnly": "npm run lint && npm test && npm run build",
+    "gate-self-test": "node scripts/gate-self-test.mjs"
   },
-  "keywords": ["tls", "ssl", "certificate", "webpki", "dv", "ov", "ev", "audit"],
+  "keywords": [
+    "tls",
+    "ssl",
+    "certificate",
+    "webpki",
+    "dv",
+    "ov",
+    "ev",
+    "audit"
+  ],
   "author": "Attestto <hello@attestto.com>",
   "license": "Apache-2.0",
   "dependencies": {
@@ -37,5 +57,27 @@
     "typescript-eslint": "^8.0.0",
     "vitest": "^3.2.4"
   },
-  "repository": { "type": "git", "url": "https://github.com/Attestto-com/attestto-tls-audit.git" }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Attestto-com/attestto-tls-audit.git"
+  },
+  "gateSelfTest": {
+    "workflow": ".github/workflows/ci.yml",
+    "testScript": "test",
+    "buildScript": "build",
+    "gates": [
+      {
+        "name": "lint",
+        "script": "lint",
+        "seed": "src/__gate-self-test__.ts",
+        "content": "export function seeded(): void {\n  const unused = 1\n  Promise.resolve().then(() => undefined)\n}\n"
+      },
+      {
+        "name": "test",
+        "script": "test",
+        "seed": "tests/__gate-self-test__.spec.ts",
+        "content": "import { it, expect } from 'vitest'\nit('is a deliberate failure', () => { expect(1).toBe(2) })\n"
+      }
+    ]
+  }
 }
